@@ -1,10 +1,4 @@
 # Standalone GPU test; intentionally not included by runtests.jl.
-# Prepare an environment from the repository root:
-#   julia --project=/tmp/percival-gpu -e \
-#     'using Pkg; Pkg.develop(path=pwd()); Pkg.add(["CUDA", "NLPModels"])'
-# Run in an environment containing this checkout and CUDA:
-#   julia --project=/tmp/percival-gpu test/gpu.jl
-# Pass "equality" or "inequality" to run only that case.
 
 module TestGPU
 
@@ -130,23 +124,15 @@ function test_gpu(::Type{V}; cases = (false, true), bounds_analysis = false) whe
   return
 end
 
-end # module TestGPU
+import CUDA
 
-if abspath(PROGRAM_FILE) == @__FILE__
-  import CUDA
+function runtests(cases = (false, true))
   if !CUDA.functional()
     error("This standalone test requires a functional CUDA GPU.")
   end
   CUDA.versioninfo()
   CUDA.allowscalar(false)
-  cases = if isempty(ARGS)
-    (false, true)
-  elseif ARGS == ["equality"]
-    (false,)
-  elseif ARGS == ["inequality"]
-    (true,)
-  else
-    error("Usage: julia --project=/tmp/percival-gpu test/gpu.jl [equality|inequality]")
-  end
-  TestGPU.test_gpu(typeof(CUDA.zeros(Float64, 0)); cases = cases)
+  TestGPU.test_gpu(typeof(CUDA.zeros(Float64, 0)); cases)
 end
+
+end # module TestGPU
