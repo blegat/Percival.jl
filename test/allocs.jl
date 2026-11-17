@@ -1,3 +1,5 @@
+using Percival, NLPModels, NLPModelsModifiers, NLPModelsTest, SolverCore, Test
+
 """
     @wrappedallocs(expr)
 Given an expression, this macro wraps that expression inside a new function
@@ -43,6 +45,7 @@ if v"1.7" <= VERSION
           y = nlp.meta.y0
           cx = similar(y)
           model = Percival.AugLagModel(nlp, y, μ, x, fx, cx)
+          Percival.reinit!(model, nlp, fx, μ, x, y)
 
           test_zero_allocations(model, exclude = [hess])
         end

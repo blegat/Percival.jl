@@ -23,9 +23,10 @@ In addition to keeping `meta` and `counters` as any NLPModel, an AugLagModel als
 - `x`: Reference to the last point at which the function `c(x)` was computed,
 - `fx`: Reference to `f(x)`,
 - `cx`: Reference to `c(x)`,
-- `μc_y`: storage for y - μ * cx,
+- `μc_y`: storage for μ * cx - y, initialized by `reinit!`,
 - `store_Jv` and `store_JtJv`: storage used in `hprod!`.
 
+Call `reinit!` before evaluating the model to initialize its work buffers.
 Use the functions `update_cx!`, `update_y!` and `update_μ!` to update these values.
 """
 mutable struct AugLagModel{M <: AbstractNLPModel, T <: AbstractFloat, V <: AbstractVector} <:
@@ -39,7 +40,7 @@ mutable struct AugLagModel{M <: AbstractNLPModel, T <: AbstractFloat, V <: Abstr
   fx::T # save last objective value of subsolver
   cx::V # save last constraint value of subsolver
   Fx::V
-  μc_y::V # y - μ * cx
+  μc_y::V # μ * cx - y
   store_Jv::V
   store_Jtv::V
 end
@@ -75,7 +76,7 @@ function AugLagModel(model::AbstractNLPModel{T, V}, y::V, μ::T, x::V, fx::T, cx
     fx,
     cx,
     Fx,
-    isassigned(y) && isassigned(cx) ? y - μ * cx : similar(y),
+    similar(y),
     fill!(V(undef, ncon), zero(T)),
     fill!(V(undef, nvar), zero(T)),
   )

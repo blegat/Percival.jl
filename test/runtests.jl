@@ -9,6 +9,7 @@ mutable struct DummyModel{T, S} <: AbstractNLPModel{T, S}
 end
 
 include("allocs.jl")
+include("auglagmodel.jl")
 
 function test()
   nlp = DummyModel(NLPModelMeta(1, minimize = false))
