@@ -103,6 +103,11 @@ NLPModels.jtprod_nln!(
 function test_gpu(::Type{V}; cases = (false, true), bounds_analysis = false) where {V}
   @testset "GPU quadratic: inequality=$inequality" for inequality in cases
     nlp = QuadraticModel(V; inequality = inequality, bounds_analysis = bounds_analysis)
+    if !inequality
+      @test_throws ErrorException(
+        "percival(::Val{:ineq}, nlp) should only be called for problems with inequalities. Use percival(nlp)",
+      ) Percival.percival(Val(:ineq), nlp)
+    end
     function callback(model, solver, stats)
       if stats.iter == 0
         @test solver.x isa V

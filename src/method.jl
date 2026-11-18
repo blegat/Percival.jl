@@ -64,7 +64,7 @@ function percival(
 end
 
 function percival(::Val{:ineq}, nlp::AbstractNLPModel; x::V = nlp.meta.x0, kwargs...) where {V}
-  if nlp.meta.ncon == 0 || equality_constrained(nlp)
+  if nlp.meta.ncon == 0 || _is_equality_constrained(nlp)
     error(
       "percival(::Val{:ineq}, nlp) should only be called for problems with inequalities. Use percival(nlp)",
     )
