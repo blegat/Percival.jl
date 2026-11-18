@@ -18,7 +18,7 @@ function QuadraticModel(
   ::Type{V};
   n = 100,
   inequality = false,
-  bounds_analysis = false,
+  bounds_analysis = true,
 ) where {T, V <: AbstractVector{T}}
   meta = NLPModels.NLPModelMeta{T, V}(
     n,
@@ -100,7 +100,7 @@ NLPModels.jtprod_nln!(
   Jty::AbstractVector,
 ) = NLPModels.jtprod!(nlp, x, y, Jty)
 
-function test_gpu(::Type{V}; cases = (false, true), bounds_analysis = false) where {V}
+function test_gpu(::Type{V}; cases = (false, true), bounds_analysis = true) where {V}
   @testset "GPU quadratic: inequality=$inequality" for inequality in cases
     nlp = QuadraticModel(V; inequality = inequality, bounds_analysis = bounds_analysis)
     if !inequality
